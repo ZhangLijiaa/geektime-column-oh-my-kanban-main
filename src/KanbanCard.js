@@ -57,12 +57,13 @@ export default function KanbanCard({ title, status, onDragStart, onRemove }) {
   const handleDragStart = (evt) => {
     evt.dataTransfer.effectAllowed = 'move'; //设置本次拖拽中允许的效果为移动被拖拉的节点
     evt.dataTransfer.setData('text/plain', title); //设置拖拽事件所带有的数据为title
-    onDragStart && onDragStart(evt); //当用户开始拖动元素时，执行onDragStart函数
+    onDragStart && onDragStart(evt); //当形参中onDragStart返回值不为空时，执行onDragStart函数
   };
 
   const isAdmin = useContext(AdminContext); //通过useContext使用AdminContext，用isAdmin变量接收
 
   return (
+    //将li设置成可拖拽的，当用户开始拖动元素时执行handleDragStart函数
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
       <div css={kanbanCardTitleStyles}>{title}</div>
       <div css={css`
@@ -72,7 +73,10 @@ export default function KanbanCard({ title, status, onDragStart, onRemove }) {
       `} title={status}>{displayTime} {isAdmin && onRemove && (
         <button onClick={() => onRemove({title})}>X</button>
       )}</div>
-      {/* 条件渲染删除按钮，按钮点击时调用onRemove函数 */}
+      {/* 
+        条件渲染删除按钮，按钮点击时调用onRemove函数 
+        当前是管理员模式的时候，显示X按钮
+      */}
     </li>
   );
 }

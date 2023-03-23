@@ -37,31 +37,19 @@ const kanbanColumnStyles = css`
   }
 `;
 
-export default function KanbanColumn({
-  bgColor,
-  canAddNew = false,
-  cardList = [],
-  onAdd,
-  onDrop,
-  onRemove,
-  setDraggedItem,
-  setIsDragSource = () => {},
-  setIsDragTarget = () => {},
-  title
-}) {
-
+export default function KanbanColumn({bgColor, canAddNew = false, cardList = [], onAdd, onDrop, onRemove, setDraggedItem, setIsDragSource = () => {}, setIsDragTarget = () => {}, title}) {
   //通过useState将showAdd的初始值设置为false，并设置setShowAdd函数以便后续改变showAdd的值
   const [showAdd, setShowAdd] = useState(false);
 
   //点击"添加新卡片"按钮触发的点击事件
   const handleAdd = (evt) => {
-    setShowAdd(true);//将showAdd的初始值设置为true
+    setShowAdd(true); //将showAdd的初始值设置为true
   };
 
-  //
+  //按下"回车键"会触发的事件
   const handleSubmit = (newCard) => {
-    onAdd && onAdd(newCard);
-    setShowAdd(false);//将showAdd的值设置为false
+    onAdd && onAdd(newCard); //如果onAdd不为空时，执行onAdd函数
+    setShowAdd(false);//将showAdd的值设置为false，添加新卡片按钮不被禁用，新卡片不显示
   };
 
   return (
@@ -93,6 +81,7 @@ export default function KanbanColumn({
     >
       <h2>
         {title}
+        {/* 如果canAddNew为true则渲染加载按钮 */}
         {canAddNew && (
           //通过showAdd变量控制此按钮是否为可点击状态，当showAdd为false时按钮可点，当showAdd为true时按钮不可点
           <button onClick={handleAdd} disabled={showAdd}>
@@ -101,13 +90,16 @@ export default function KanbanColumn({
         )}
       </h2>
       <ul>
+        {/* 如果canAddNew为true并且showAdd也为true时，渲染加载KanbanNewCard子组件，显示添加新卡片 */}
         {canAddNew && showAdd && <KanbanNewCard onSubmit={handleSubmit} />}
+        {/* 使用map对cardList进行遍历 */}
         {cardList.map((props) => (
           <KanbanCard
-            key={props.title}
+            key={props.title} //key为遍历出的每一项的标题
+            //当setDraggedItem不为空时，执行setDraggedItem函数
             onDragStart={() => setDraggedItem && setDraggedItem(props)}
-            onRemove={onRemove}
-            {...props}
+            onRemove={onRemove} //删除操作
+            {...props} //使用扩展运算符加载所有的数据项
           />
         ))}
       </ul>

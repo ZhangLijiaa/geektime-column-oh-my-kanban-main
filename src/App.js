@@ -38,18 +38,18 @@ function App() {
     const data = window.localStorage.getItem(DATA_STORE_KEY);
     setTimeout(() => { //为了模拟远程服务的耗时，设置定时器
       if (data) { //如果data不为空
-        const kanbanColumnData = JSON.parse(data); //通过parse方法将data转成js对象并定义为kanbanColumnData
+        const kanbanColumnData = JSON.parse(data); //通过parse方法将data转成js对象并赋值给kanbanColumnData
         setTodoList(kanbanColumnData.todoList); //通过setTodoList方法更新todoList的数据
         setOngoingList(kanbanColumnData.ongoingList); //通过setOngoingList方法更新ongoingList的数据
         setDoneList(kanbanColumnData.doneList); //通过setDoneList方法更新doneList的数据
       }
-      setIsLoading(false); //通过setIsLoading方法将isLoading的值设置为false
+      setIsLoading(false); //通过setIsLoading方法将isLoading的值设置为false，不显示"读取中..."
     }, 1000); //定时器时间为1秒
   },[]); //回调函数只会在第一次render()后执行
 
   //点击"保存所有卡片"按钮执行的事件
   const handleSaveAll = () => {
-    //将{todoList,ongoingList,doneList}对象通过stringify方法转成JSON字符串并定义为data
+    //将{todoList,ongoingList,doneList}对象通过stringify方法转成JSON字符串并赋值给data
     const data = JSON.stringify({
       todoList,
       ongoingList,
@@ -84,9 +84,9 @@ function App() {
   //通过useState将isAdmin的初始值设置为false，并设置setIsAdmin函数以便后续改变isAdmin的值
   const [isAdmin, setIsAdmin] = useState(false);
 
-  //定义handleToggleAdmin函数在点击删除按钮时调用
+  //定义handleToggleAdmin函数在勾选"管理员模式"选择框时调用
   const handleToggleAdmin = (evt) => {
-    setIsAdmin(!isAdmin); //使用setIsAdmin函数将isAdmin的值取反以得到删除的目的
+    setIsAdmin(!isAdmin); //使用setIsAdmin函数将isAdmin的值取反
   };
 
   return (
@@ -102,14 +102,16 @@ function App() {
         </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
+      {/* 使用<AdminContext.Provider>组件，定义value值 */}
       <AdminContext.Provider value={isAdmin}>
+        {/* 将子组件KanbanBoard声明在标签内部 */}
         <KanbanBoard
-          isLoading={isLoading}
-          todoList={todoList}
-          ongoingList={ongoingList}
-          doneList={doneList}
-          onAdd={handleAdd}
-          onRemove={handleRemove}
+          isLoading={isLoading} //"读取中..."
+          todoList={todoList} //待处理
+          ongoingList={ongoingList} //进行中
+          doneList={doneList} //已完成
+          onAdd={handleAdd} //添加操作
+          onRemove={handleRemove} //删除操作
         />
       </AdminContext.Provider>
     </div>

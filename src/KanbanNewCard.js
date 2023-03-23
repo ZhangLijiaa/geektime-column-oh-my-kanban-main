@@ -36,6 +36,11 @@ export default function KanbanNewCard({ onSubmit }) {
           width: 80%;
         }
       `}>
+        {/* 
+          将input框的ref绑定为inputElem
+          失去焦点时，输入内容改变触发onChange事件，执行handleChange函数
+          键盘按下触发onKeyDown事件，执行handleKeyDown函数 
+        */}
         <input type="text" value={title} ref={inputElem}
           onChange={handleChange} onKeyDown={handleKeyDown} />
       </div>
