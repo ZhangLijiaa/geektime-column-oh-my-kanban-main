@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import AdminContext from './context/AdminContext';
+import ListTitleContext from './context/ListTitleContext';
 
 export const kanbanCardStyles = css`
   margin-bottom: 1rem;
@@ -62,10 +63,13 @@ export default function KanbanCard({ title, status, onDragStart, onRemove}) {
 
   const isAdmin = useContext(AdminContext); //通过useContext使用AdminContext，用isAdmin变量接收
 
+  const allList = useContext(ListTitleContext)
+  console.log(allList)
+
   const handleClick = () => {
     const str = prompt('将任务标题修改为：')
     if(str) {
-      alert('修改成功')
+      
     }
   }
 

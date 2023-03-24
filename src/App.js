@@ -9,6 +9,7 @@ import KanbanBoard, {
 } from './KanbanBoard';
 import AdminContext from './context/AdminContext';
 import {useDebounce} from 'ahooks'
+import ListTitleContext from './context/ListTitleContext'
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
@@ -122,6 +123,9 @@ function App() {
       return item + '\n'
     })
   }
+
+  const allList = todoList.concat(ongoingList, doneList)
+
   return (
     <div className="App">
       <header className="App-header">
@@ -148,6 +152,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
       </header>
       {isShow ? <div className='searchResult'>{listResult()}</div> : null}
+      <ListTitleContext.Provider value={allList}>
       {/* 使用<AdminContext.Provider>组件，定义value值 */}
       <AdminContext.Provider value={isAdmin}>
         {/* 将子组件KanbanBoard声明在标签内部 */}
@@ -160,6 +165,7 @@ function App() {
           onRemove={handleRemove} //删除操作
         />
       </AdminContext.Provider>
+      </ListTitleContext.Provider>
     </div>
   );
 }
