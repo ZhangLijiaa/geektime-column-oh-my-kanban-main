@@ -91,17 +91,20 @@ export default function KanbanColumn({bgColor, canAddNew = false, cardList = [],
       </h2>
       <ul>
         {/* 如果canAddNew为true并且showAdd也为true时，渲染加载KanbanNewCard子组件，显示添加新卡片 */}
-        {canAddNew && showAdd && <KanbanNewCard onSubmit={handleSubmit} />}
+        {canAddNew && showAdd && <KanbanNewCard onSubmit={handleSubmit}  setShowAdd={setShowAdd}/>}
         {/* 使用map对cardList进行遍历 */}
-        {cardList.map((props) => (
-          <KanbanCard
-            key={props.title} //key为遍历出的每一项的标题
-            //当setDraggedItem不为空时，执行setDraggedItem函数
-            onDragStart={() => setDraggedItem && setDraggedItem(props)}
-            onRemove={onRemove} //删除操作
-            {...props} //使用扩展运算符加载所有的数据项
-          />
-        ))}
+        {cardList.map((props) => {
+          if(!props){
+            console.log('cardList',cardList);
+          }
+          return <KanbanCard
+          key={props.title} //key为遍历出的每一项的标题
+          //当setDraggedItem不为空时，执行setDraggedItem函数
+          onDragStart={() => setDraggedItem && setDraggedItem(props)}
+          onRemove={onRemove} //删除操作
+          {...props} //使用扩展运算符加载所有的数据项
+        />
+        })}
       </ul>
     </section>
   );

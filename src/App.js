@@ -8,6 +8,7 @@ import KanbanBoard, {
   COLUMN_KEY_TODO, //'done'
 } from './KanbanBoard';
 import AdminContext from './context/AdminContext';
+import {useDebounce} from 'ahooks'
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
@@ -23,12 +24,15 @@ function App() {
   const [ongoingList, setOngoingList ] = useState([
     { title: '开发任务-4', status: '2022-05-22 18:15' },
     { title: '开发任务-6', status: '2022-06-22 18:15' },
-    { title: '测试任务-2', status: '2022-07-22 18:15' }
+    { title: '测试任务-2', status: '2022-07-22 18:15' },
+    { title: '开发任务-7', status: '2022-05-23 18:15' }
   ]);
   //通过useState初始化doneList数据，并设置setDoneList函数以便后续改变doneList数据
   const [doneList, setDoneList ] = useState([
     { title: '开发任务-2', status: '2022-06-24 18:15' },
-    { title: '测试任务-1', status: '2022-07-03 18:15' }
+    { title: '测试任务-1', status: '2022-07-03 18:15' },
+    { title: '测试任务-4', status: '2022-06-23 18:15' },
+    { title: '测试任务-5', status: '2022-06-21 18:15' }
   ]);
   //通过useState将isLoading初始值设置为true，并设置setIsLoading函数以便后续改变isLoading状态
   const [isLoading, setIsLoading] = useState(true);
@@ -68,6 +72,9 @@ function App() {
 
   //将目标数据项添加到目的tab栏中
   const handleAdd = (column, newCard) => { //column指哪个tab栏，newCard指新添加的卡片
+    console.log('column',column);
+    console.log('newCard',newCard);
+
     //使用setXxxList函数改变xxxList里的数据，运用扩展运算符将newCard添加到其中
     updaters[column]((currentStat) => [newCard, ...currentStat]);
   };
@@ -89,9 +96,47 @@ function App() {
     setIsAdmin(!isAdmin); //使用setIsAdmin函数将isAdmin的值取反
   };
 
+  const [isShow, setIsShow] = useState(false)
+  const [value, setValue] = useState('');
+  const debouncedValue = useDebounce(value, {wait:1500});
+
+  const getTitles = (listName) => {
+    return listName.map((item) => {
+      return item.title
+    })
+  }
+  const allTitles = getTitles(todoList).concat(getTitles(ongoingList), getTitles(doneList))
+  const searchMatch = (list, keyword) => {
+    let arr = []
+    for(let i = 0; i < list.length; i++) {
+      if(list[i].indexOf(keyword) >= 0) {
+        arr.push(list[i])
+      }
+    }
+    return arr
+  }
+  
+  const searchResult = searchMatch(allTitles, debouncedValue)
+  const listResult = () => {
+    return searchResult.map((item) => {
+      return item + '\n'
+    })
+  }
   return (
     <div className="App">
       <header className="App-header">
+        <input placeholder='搜索'
+          value={value || ''}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          onFocus = {() => {
+            setIsShow(true)
+          }}
+          onBlur = {() => {
+            setIsShow(false)
+          }}
+        />
         <h1>
           我的看板 
           <button onClick={handleSaveAll}>保存所有卡片</button>
@@ -102,6 +147,7 @@ function App() {
         </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
+      {isShow ? <div className='searchResult'>{listResult()}</div> : null}
       {/* 使用<AdminContext.Provider>组件，定义value值 */}
       <AdminContext.Provider value={isAdmin}>
         {/* 将子组件KanbanBoard声明在标签内部 */}

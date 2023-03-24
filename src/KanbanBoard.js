@@ -33,7 +33,7 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
   //当可拖动元素在目标区域时，要执行的函数
   const handleDrop = (evt) => {
     //如果没有可拖拽项或者没有拖拽的源头或者没有拖拽的目的地或者拖拽的源头和拖拽的目的地是同一个
-    if (!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget) {
+    if (!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget || ((dragSource === COLUMN_KEY_TODO) && (dragTarget === COLUMN_KEY_DONE))) {
       //不继续向下执行函数
       return;
     }
@@ -56,11 +56,13 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
           //如果isTgt为true，设置拖拽目的地为"todo"，否则设置为null
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
-          onAdd={onAdd.bind(null, COLUMN_KEY_TODO)} //???添加操作null.onAdd(COLUMN_KEY_TODO)
+          onAdd={(newCard)=>onAdd(COLUMN_KEY_TODO,newCard)} //???添加操作null.onAdd(COLUMN_KEY_TODO)
           onDrop={handleDrop} //拖拽操作
+          onRemove={onRemove.bind(null, COLUMN_KEY_TODO)}
           cardList={todoList} //当前卡片为todoList
         />
         <KanbanColumn
+          canAddNew
           bgColor={COLUMN_BG_COLORS.ongoing} //背景颜色
           title="进行中" //标题为"进行中"
           setDraggedItem={setDraggedItem} //改变draggedItem的值的函数
@@ -68,10 +70,13 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_ONGOING : null)}
           //如果isTgt为true，设置拖拽目的地为"ongoing"，否则设置为null
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_ONGOING : null)}
+          onAdd={(newCard)=>onAdd(COLUMN_KEY_ONGOING,newCard)}
           onDrop={handleDrop} //拖拽操作
+          onRemove={onRemove.bind(null, COLUMN_KEY_ONGOING)}
           cardList={ongoingList} //当前卡片为goingList
         />
         <KanbanColumn
+          canAddNew
           bgColor={COLUMN_BG_COLORS.done} //背景颜色
           title="已完成" //标题为"已完成"
           setDraggedItem={setDraggedItem} //改变draggedItem的值的函数
@@ -79,6 +84,7 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_DONE : null)}
           //如果isTgt为true，设置拖拽目的地为"done"，否则设置为null
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
+          onAdd={(newCard)=>onAdd(COLUMN_KEY_DONE,newCard)}
           onDrop={handleDrop} //拖拽操作
           onRemove={onRemove.bind(null, COLUMN_KEY_DONE)} //???删除操作null.onRemove(COLUMN_KEY_DONE)
           cardList={doneList} //当前卡片为doneList

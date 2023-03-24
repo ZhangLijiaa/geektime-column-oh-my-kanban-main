@@ -25,7 +25,7 @@ const HOUR = 60 * MINUTE; //1小时
 const DAY = 24 * HOUR; //1天
 const UPDATE_INTERVAL = MINUTE; //将MINUTE宏定义为UPDATE_INTERVAL
 
-export default function KanbanCard({ title, status, onDragStart, onRemove }) {
+export default function KanbanCard({ title, status, onDragStart, onRemove}) {
   //通过useState将displayTime的初始值设置为看板里每条数据的初始时间，并设置setDisplayTime函数以便后续改变displayTime的值
   const [displayTime, setDisplayTime] = useState(status);
   
@@ -62,17 +62,27 @@ export default function KanbanCard({ title, status, onDragStart, onRemove }) {
 
   const isAdmin = useContext(AdminContext); //通过useContext使用AdminContext，用isAdmin变量接收
 
+  const handleClick = () => {
+    const str = prompt('将任务标题修改为：')
+    if(str) {
+      alert('修改成功')
+    }
+  }
+
   return (
     //将li设置成可拖拽的，当用户开始拖动元素时执行handleDragStart函数
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
       <div css={kanbanCardTitleStyles}>{title}</div>
+      <button onClick={handleClick}>编辑</button>
       <div css={css`
         text-align: right;
         font-size: 0.8rem;
         color: #333;
+        float: right
       `} title={status}>{displayTime} {isAdmin && onRemove && (
         <button onClick={() => onRemove({title})}>X</button>
-      )}</div>
+      )}
+      </div>
       {/* 
         条件渲染删除按钮，按钮点击时调用onRemove函数 
         当前是管理员模式的时候，显示X按钮

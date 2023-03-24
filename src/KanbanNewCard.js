@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import { kanbanCardStyles, kanbanCardTitleStyles } from './KanbanCard';
 
-export default function KanbanNewCard({ onSubmit }) {
+export default function KanbanNewCard({ onSubmit, setShowAdd }) {
   //通过useState设置title的初始值为空数据，并设置setTitle函数以便后续改变title数据
   const [title, setTitle] = useState('');
 
@@ -27,6 +27,10 @@ export default function KanbanNewCard({ onSubmit }) {
     inputElem.current.focus(); //将文本输入框设置为页面焦点
   }, []); //回调函数只会在第一次render()后执行
 
+  const handleBlur = ()=> {
+    setShowAdd(false)
+  }
+
   return (
     <li css={kanbanCardStyles}> 
       <h3>添加新卡片</h3>
@@ -38,11 +42,12 @@ export default function KanbanNewCard({ onSubmit }) {
       `}>
         {/* 
           将input框的ref绑定为inputElem
-          失去焦点时，输入内容改变触发onChange事件，执行handleChange函数
+          失去焦点时，输入内容改变，触发onChange事件，执行handleChange函数
           键盘按下触发onKeyDown事件，执行handleKeyDown函数 
         */}
         <input type="text" value={title} ref={inputElem}
-          onChange={handleChange} onKeyDown={handleKeyDown} />
+          onChange={handleChange} onKeyDown={handleKeyDown} onBlur={handleBlur}/>
+        {/* <button style={{marginLeft:10}}>取消</button> */}
       </div>
     </li>
   );
