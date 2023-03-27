@@ -22,7 +22,7 @@ export const COLUMN_KEY_TODO = 'todo'; //将'todo'赋值给COLUMN_KEY_TODO
 export const COLUMN_KEY_ONGOING = 'ongoing'; //将'ongoing'赋值给COLUMN_KEY_ONGOING
 export const COLUMN_KEY_DONE = 'done'; //将'done'赋值给COLUMN_KEY_DONE
 
-export default function KanbanBoard({isLoading = true, todoList, ongoingList, doneList, onAdd, onRemove}) {
+export default function KanbanBoard({isLoading = true, todoList, ongoingList, doneList, onAdd, onRemove, onUpdate}) {
   //通过useState将draggedItem数据的初始值设置为null，并设置setDraggedItem函数以便后续改变draggedItem的值
   const [draggedItem, setDraggedItem] = useState(null);
   //通过useState将dragSource数据的初始值设置为null，并设置setDragSource函数以便后续改变dragSource的值
@@ -60,6 +60,7 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           onDrop={handleDrop} //拖拽操作
           onRemove={onRemove.bind(null, COLUMN_KEY_TODO)}
           cardList={todoList} //当前卡片为todoList
+          onUpdate={onUpdate.bind(null, COLUMN_KEY_TODO)}
         />
         <KanbanColumn
           canAddNew
@@ -74,6 +75,7 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           onDrop={handleDrop} //拖拽操作
           onRemove={onRemove.bind(null, COLUMN_KEY_ONGOING)}
           cardList={ongoingList} //当前卡片为goingList
+          onUpdate={onUpdate.bind(null, COLUMN_KEY_ONGOING)}
         />
         <KanbanColumn
           canAddNew
@@ -88,6 +90,7 @@ export default function KanbanBoard({isLoading = true, todoList, ongoingList, do
           onDrop={handleDrop} //拖拽操作
           onRemove={onRemove.bind(null, COLUMN_KEY_DONE)} //???删除操作null.onRemove(COLUMN_KEY_DONE)
           cardList={doneList} //当前卡片为doneList
+          onUpdate={onUpdate.bind(null, COLUMN_KEY_DONE)}
         />
       </>)}
     </main>

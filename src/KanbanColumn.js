@@ -37,7 +37,7 @@ const kanbanColumnStyles = css`
   }
 `;
 
-export default function KanbanColumn({bgColor, canAddNew = false, cardList = [], onAdd, onDrop, onRemove, setDraggedItem, setIsDragSource = () => {}, setIsDragTarget = () => {}, title}) {
+export default function KanbanColumn({bgColor, canAddNew = false, cardList = [], onAdd, onDrop, onRemove, setDraggedItem, setIsDragSource = () => {}, setIsDragTarget = () => {}, title, onUpdate}) {
   //通过useState将showAdd的初始值设置为false，并设置setShowAdd函数以便后续改变showAdd的值
   const [showAdd, setShowAdd] = useState(false);
 
@@ -48,6 +48,13 @@ export default function KanbanColumn({bgColor, canAddNew = false, cardList = [],
 
   //按下"回车键"会触发的事件
   const handleSubmit = (newCard) => {
+    console.log(cardList, '+', newCard)
+    cardList.forEach(e => {
+      if(e.title === newCard.title) {
+        alert('该任务已存在，请重新命名！')
+        throw Error()
+      }
+    })
     onAdd && onAdd(newCard); //如果onAdd不为空时，执行onAdd函数
     setShowAdd(false);//将showAdd的值设置为false，添加新卡片按钮不被禁用，新卡片不显示
   };
@@ -103,6 +110,7 @@ export default function KanbanColumn({bgColor, canAddNew = false, cardList = [],
           onDragStart={() => setDraggedItem && setDraggedItem(props)}
           onRemove={onRemove} //删除操作
           {...props} //使用扩展运算符加载所有的数据项
+          onUpdate={onUpdate}
         />
         })}
       </ul>

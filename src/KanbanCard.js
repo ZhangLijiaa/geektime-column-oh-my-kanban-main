@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import AdminContext from './context/AdminContext';
-import ListTitleContext from './context/ListTitleContext';
 
 export const kanbanCardStyles = css`
   margin-bottom: 1rem;
@@ -26,7 +25,7 @@ const HOUR = 60 * MINUTE; //1小时
 const DAY = 24 * HOUR; //1天
 const UPDATE_INTERVAL = MINUTE; //将MINUTE宏定义为UPDATE_INTERVAL
 
-export default function KanbanCard({ title, status, onDragStart, onRemove}) {
+export default function KanbanCard({ title, status, onDragStart, onRemove, onUpdate}) {
   //通过useState将displayTime的初始值设置为看板里每条数据的初始时间，并设置setDisplayTime函数以便后续改变displayTime的值
   const [displayTime, setDisplayTime] = useState(status);
   
@@ -63,21 +62,11 @@ export default function KanbanCard({ title, status, onDragStart, onRemove}) {
 
   const isAdmin = useContext(AdminContext); //通过useContext使用AdminContext，用isAdmin变量接收
 
-  const allList = useContext(ListTitleContext)
-  console.log(allList)
-
-  const handleClick = () => {
-    const str = prompt('将任务标题修改为：')
-    if(str) {
-      
-    }
-  }
-
   return (
     //将li设置成可拖拽的，当用户开始拖动元素时执行handleDragStart函数
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
       <div css={kanbanCardTitleStyles}>{title}</div>
-      <button onClick={handleClick}>编辑</button>
+      <button onClick={() => onUpdate({title})}>编辑</button>
       <div css={css`
         text-align: right;
         font-size: 0.8rem;

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import KanbanBoard, {
@@ -9,11 +9,11 @@ import KanbanBoard, {
 } from './KanbanBoard';
 import AdminContext from './context/AdminContext';
 import {useDebounce} from 'ahooks'
-import ListTitleContext from './context/ListTitleContext'
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
 function App() {
+  const searchRef = useRef();
   //通过useState初始化todoList数据，并设置setTodoList函数以便后续改变todoList数据
   const [todoList, setTodoList] = useState([
     { title: '开发任务-1', status: '2022-05-22 18:15' },
@@ -88,6 +88,20 @@ function App() {
       currentStat.filter((item) => item.title !== cardToRemove.title)
     );
   };
+  
+  const handleUpdate = (column, cardToUpdate) => {
+    console.log(column, cardToUpdate);
+    const {title} = cardToUpdate;
+    const str = prompt(`将任务标题修改为：`,`${title}`)
+    updaters[column](currentStat => {
+      currentStat.forEach(element => {
+        if(element.title === cardToUpdate.title) {
+          element.title = str
+        }
+      });
+      return [...currentStat]
+    });
+  }
 
   //通过useState将isAdmin的初始值设置为false，并设置setIsAdmin函数以便后续改变isAdmin的值
   const [isAdmin, setIsAdmin] = useState(false);
@@ -97,50 +111,20 @@ function App() {
     setIsAdmin(!isAdmin); //使用setIsAdmin函数将isAdmin的值取反
   };
 
-  const [isShow, setIsShow] = useState(false)
-  const [value, setValue] = useState('');
-  const debouncedValue = useDebounce(value, {wait:1500});
-
-  const getTitles = (listName) => {
-    return listName.map((item) => {
-      return item.title
-    })
-  }
-  const allTitles = getTitles(todoList).concat(getTitles(ongoingList), getTitles(doneList))
-  const searchMatch = (list, keyword) => {
-    let arr = []
-    for(let i = 0; i < list.length; i++) {
-      if(list[i].indexOf(keyword) >= 0) {
-        arr.push(list[i])
-      }
-    }
-    return arr
-  }
-  
-  const searchResult = searchMatch(allTitles, debouncedValue)
-  const listResult = () => {
-    return searchResult.map((item) => {
-      return item + '\n'
-    })
-  }
-
-  const allList = todoList.concat(ongoingList, doneList)
+ const [search, setSearch] = useState('');
+ const debouncedValue = useDebounce(search, {wait:2000});
+ const onSearch = (e) => {
+  setSearch(e.target.value);
+ }
 
   return (
     <div className="App">
       <header className="App-header">
-        <input placeholder='搜索'
-          value={value || ''}
-          onChange={(e) => {
-            setValue(e.target.value)
-          }}
-          onFocus = {() => {
-            setIsShow(true)
-          }}
-          onBlur = {() => {
-            setIsShow(false)
-          }}
-        />
+        {<input placeholder='搜索'
+          value={search}
+          onChange={onSearch}
+          ref={searchRef}
+        />}
         <h1>
           我的看板 
           <button onClick={handleSaveAll}>保存所有卡片</button>
@@ -151,21 +135,26 @@ function App() {
         </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
-      {isShow ? <div className='searchResult'>{listResult()}</div> : null}
-      <ListTitleContext.Provider value={allList}>
       {/* 使用<AdminContext.Provider>组件，定义value值 */}
       <AdminContext.Provider value={isAdmin}>
         {/* 将子组件KanbanBoard声明在标签内部 */}
         <KanbanBoard
           isLoading={isLoading} //"读取中..."
-          todoList={todoList} //待处理
-          ongoingList={ongoingList} //进行中
-          doneList={doneList} //已完成
+          todoList={todoList.filter((item) => {
+            return item.title.includes(debouncedValue)
+          })} //待处理
+          ongoingList={ongoingList.filter((item) => {
+            return item.title.includes(debouncedValue)
+          })} //进行中
+          doneList={doneList.filter((item) => {
+            return item.title.includes(debouncedValue)
+          })} //已完成
           onAdd={handleAdd} //添加操作
           onRemove={handleRemove} //删除操作
+          updaters={updaters}
+          onUpdate={handleUpdate}
         />
       </AdminContext.Provider>
-      </ListTitleContext.Provider>
     </div>
   );
 }
