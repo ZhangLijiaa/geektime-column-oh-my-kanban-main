@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { css } from '@emotion/react';
 import KanbanCard from './KanbanCard';
 import KanbanNewCard from './KanbanNewCard';
+import DebounceValueContext from './context/DebounceValueContext';
 
 const kanbanColumnStyles = css`
   flex: 1 1;
@@ -38,6 +39,8 @@ const kanbanColumnStyles = css`
 `;
 
 export default function KanbanColumn({bgColor, canAddNew = false, cardList = [], onAdd, onDrop, onRemove, setDraggedItem, setIsDragSource = () => {}, setIsDragTarget = () => {}, title, onUpdate}) {
+  const debouncedValue = useContext(DebounceValueContext)
+
   //通过useState将showAdd的初始值设置为false，并设置setShowAdd函数以便后续改变showAdd的值
   const [showAdd, setShowAdd] = useState(false);
 
@@ -100,7 +103,9 @@ export default function KanbanColumn({bgColor, canAddNew = false, cardList = [],
         {/* 如果canAddNew为true并且showAdd也为true时，渲染加载KanbanNewCard子组件，显示添加新卡片 */}
         {canAddNew && showAdd && <KanbanNewCard onSubmit={handleSubmit}  setShowAdd={setShowAdd}/>}
         {/* 使用map对cardList进行遍历 */}
-        {cardList.map((props) => {
+        {cardList.filter((item) => {
+          return item.title.includes(debouncedValue)
+        }).map((props) => {
           if(!props){
             console.log('cardList',cardList);
           }

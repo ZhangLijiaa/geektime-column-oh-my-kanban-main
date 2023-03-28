@@ -9,6 +9,7 @@ import KanbanBoard, {
 } from './KanbanBoard';
 import AdminContext from './context/AdminContext';
 import {useDebounce} from 'ahooks'
+import DebounceValueContext from './context/DebounceValueContext';
 
 const DATA_STORE_KEY = 'kanban-data-store';
 
@@ -135,26 +136,22 @@ function App() {
         </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
+      <DebounceValueContext.Provider value={debouncedValue}>
       {/* 使用<AdminContext.Provider>组件，定义value值 */}
       <AdminContext.Provider value={isAdmin}>
         {/* 将子组件KanbanBoard声明在标签内部 */}
         <KanbanBoard
           isLoading={isLoading} //"读取中..."
-          todoList={todoList.filter((item) => {
-            return item.title.includes(debouncedValue)
-          })} //待处理
-          ongoingList={ongoingList.filter((item) => {
-            return item.title.includes(debouncedValue)
-          })} //进行中
-          doneList={doneList.filter((item) => {
-            return item.title.includes(debouncedValue)
-          })} //已完成
+          todoList={todoList} //待处理
+          ongoingList={ongoingList} //进行中
+          doneList={doneList} //已完成
           onAdd={handleAdd} //添加操作
           onRemove={handleRemove} //删除操作
           updaters={updaters}
           onUpdate={handleUpdate}
         />
       </AdminContext.Provider>
+      </DebounceValueContext.Provider>
     </div>
   );
 }
